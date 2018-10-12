@@ -1,5 +1,7 @@
 language: generic
 install:
+    - sudo apt update
     - sudo apt install chktex
+    - sudo apt install texlive-full  
 script:
     - chktex .tex
