@@ -3,4 +3,4 @@ install:
     - sudo apt update
     - sudo apt install chktex
 script:
-    - chktex .tex
+    - chktex *.tex
