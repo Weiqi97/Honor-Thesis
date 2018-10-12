@@ -4,4 +4,4 @@ install:
     - sudo apt install chktex
 script:
     - chktex -q *.tex -o linter_result
-    - test ! -s lint.out
+    - test ! -s linter_result
