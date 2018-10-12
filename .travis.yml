@@ -8,7 +8,7 @@ install:
 script:
     # Check for errors and save the output to a file.
     - chktex -q *.tex -o linter_result
-    # Check if the file is empty.
-    - test ! -s linter_result
     # Display the file content.
     - cat linter_result
+    # Check if the file is empty to determine if test success.
+    - test ! -s linter_result
