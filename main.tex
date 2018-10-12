@@ -1,0 +1,34 @@
+% Set up the document class.
+\documentclass[letterpaper,oneside,12pt]{book}
+% Include the preambles, i.e. the packages I need.
+\include{preamble}
+% Start of the document.
+\begin{document}
+% ---------------------- Set up the front title page. ----------------------
+\begin{titlepage}
+    % Set page styles.
+    \thispagestyle{empty}\doublespacing\centering
+    \LARGE \textbf{I have not decided this yet} \\
+    \large BY \\
+    \textbf{Weiqi Feng} \\
+    \vspace{10mm}
+    A Study \\
+    Presented to the Faculty \\
+    of \\
+    Wheaton College \\
+    in Partial Fulfillment of the Requirements \\
+    for \\
+    Graduation with Departmental Honors \\
+    in Mathematics \\
+    Norton, Massachusetts \\
+    May 2019
+\end{titlepage}
+\pagebreak
+% --------------------------------------------------------------------------
+% ---------------------- Acknowledgments -----------------------------------
+\frontmatter
+\include{chapters/acknowledgments}
+\tableofcontents{}
+\include{chapters/abstract}
+% --------------------------------------------------------------------------
+\end{document}
