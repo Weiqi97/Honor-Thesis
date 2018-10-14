@@ -6,6 +6,7 @@ install:
     # Install the desired linter tool.
     - sudo apt install chktex
     # Check for errors and save the output to a file.
+    - cd content
     - chktex -q *.tex -o linter_result
     # Display the file content.
     - cat linter_result
