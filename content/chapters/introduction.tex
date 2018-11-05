@@ -1,4 +1,4 @@
-\doublespacing
+\doublespacing{}
 \chapter{Introduction}
 In this chapter, we introduce the definition of cryptography. We talk about what cryptography used to be and what it is in the modern times. Then we move on to discuss how Rubik's Cubes and cryptogrpahy can be closely related. Finally, we introduce some important preliminaries that we will use through this thesis.
 
@@ -8,16 +8,16 @@ However, cryptography has largely changed since the invention of computers and t
 In a nutshell, cryptography has gone from the set of clever puzzles concerned with ensuring secret communication for the military to a science that provides security for ordinary people across the globe.
 
 \section{Rubik's cube and cryptography}
-Rubik's cube is a three dimensional puzzle invented in 1974 by Hungarian professor Ernő Rubik. As shown in Figure ~\ref{fig:solved-cube}, the most common rubik's cube has six faces.
+Rubik's cube is a three dimensional puzzle invented in 1974 by Hungarian professor Ernő Rubik. As shown in Figure~\ref{fig:solved-cube}, the most common rubik's cube has six faces.
 % ---------------------- Figure for a solved rubik's cube ----------------------
 \begin{wrapfigure}{r}{10cm}
 \centering
-\RubikCubeSolved
+\RubikCubeSolved{}
 \ShowCube{5cm}{1}{\DrawRubikCubeLU}
 \caption{A rubik's cube at the solved state.}\label{fig:solved-cube}
 \end{wrapfigure}
 % ------------------------------------------------------------------------------
-The faces of the cube are covered by the following solid colors: white, red, blue, yellow, orange and green. For a solved cube, the white face is always opposite to the yellow face, red is opposite to orange and blue is opposite to green. In Figure ~\ref{fig:solved-cube}, the rubik's cube has three small cube on each side. We say that this rubik's cube is a 3 by 3 by 3 one. And clearly each face of the cube includes nine smaller cubes. In future discuss, we will call those small cubes cubies. After years of developing, rubik's cubes now exist in tons of different forms. For the ones that have six sides, they can differ on their side lengths. And the side length varies from 2 to 13 or even larger numbers. And rubik's cubes are not no longer required to be a cube anymore. We also have seen rubik's cubes with four side or twelve sides. \\
+The faces of the cube are covered by the following solid colors: white, red, blue, yellow, orange and green. For a solved cube, the white face is always opposite to the yellow face, red is opposite to orange and blue is opposite to green. In Figure~\ref{fig:solved-cube}, the rubik's cube has three small cube on each side. We say that this rubik's cube is a 3 by 3 by 3 one. And clearly each face of the cube includes nine smaller cubes. In future discuss, we will call those small cubes cubies. After years of developing, rubik's cubes now exist in tons of different forms. For the ones that have six sides, they can differ on their side lengths. And the side length varies from 2 to 13 or even larger numbers. And rubik's cubes are not no longer required to be a cube anymore. We also have seen rubik's cubes with four side or twelve sides. \\
 Why would we relate rubik's cubes and cryptography? Obviously, rubik's cubes provide a good shuffling schema. And rubik's cubes are known to be hard to solve. One may argue that this is not true, since the best human players can solve a 3 by 3 by 3 cube in about 6 seconds. Also by following the developed algorithms, anyone can solve a well shuffled rubik's cube on a scale of minutes. However, it is true that rubik's cubes have a lot of different states. The most common 3 by 3 by 3 rubik's cube have over 43 quintillion different states. It will take hundreds of years for a powerful desktop to run through all the possible states. Then we know that a schema designed based on rubik's cubes could be safe against exhaustive search attacks. In addition, we can view rubik's cubes as groups. The nice properties of groups are widely used in cryptography. We will explore more about this in the following chapters.
 
 \section{Preliminaries}
