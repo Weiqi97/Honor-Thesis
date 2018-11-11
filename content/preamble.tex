@@ -1,3 +1,5 @@
+% --------------------------------------------------------------------------
+% Set geometry package to define the size of pages.
 \usepackage[
   centering,
   includehead,
@@ -5,14 +7,35 @@
   total={6in,9in},
   bindingoffset=0.5in
 ]{geometry}
-\usepackage{setspace}
+% --------------------------------------------------------------------------
+% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{csquotes}
+% --------------------------------------------------------------------------
+% Figure and drawing related packages.
+\usepackage{tikz}
 \usepackage{caption}
 \usepackage{wrapfig}
+\usepackage{setspace}
 \usepackage{graphicx}
 \usepackage{fontawesome}
-% Uncomment this line if decided adding indent to first paragraphs.
-% \usepackage{indentfirst}
-% Include the drawing library.
-\usepackage{tikz}
-% Not sure if this line will be keeped. (Include the cube package.)
+% An easy way to draw rubik's cubes. Notice this must be places after tikz.
 \usepackage{rubikcube,rubikrotation,rubikpatterns}
+% --------------------------------------------------------------------------
+% Useful mathematics packages.
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+% --------------------------------------------------------------------------
+% Define useful theorem environments.
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{example}{Example}[chapter]
+\newtheorem{corollary}[theorem]{Corollary}
+% --------------------------------------------------------------------------
+% This will be removed at the end of the thesis.
+% Add to do notes in the thesis.
+\usepackage{todonotes}
