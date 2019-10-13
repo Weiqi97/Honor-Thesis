@@ -9,33 +9,52 @@
 ]{geometry}
 % --------------------------------------------------------------------------
 % Language and font encoding.
+\usepackage[final]{microtype}
 \usepackage[english]{babel}
 \usepackage[T1]{fontenc}
 \usepackage{csquotes}
 % --------------------------------------------------------------------------
 % Figure and drawing related packages.
+\usepackage{pbox}
 \usepackage{tikz}
+\usepackage{pifont}
 \usepackage{caption}
+\usepackage{dirtree}
 \usepackage{wrapfig}
-\usepackage{setspace}
+\usepackage{listings}
 \usepackage{graphicx}
+\usepackage{setspace}
 \usepackage{fontawesome}
-% An easy way to draw Rubik's cubes. Notice this must be places after tikz.
+% An easy way to draw Rubik's cubes. Must be places after tikz.
 \usepackage{rubikcube,rubikrotation,rubikpatterns}
 % --------------------------------------------------------------------------
-% Useful mathematics packages.
+% Useful mathematics/symbol packages.
 \usepackage{amsthm}
 \usepackage{amsmath}
 \usepackage{amssymb}
+\usepackage{upgreek}
+\usepackage{textcomp}
 \usepackage{mathtools}
 % --------------------------------------------------------------------------
 % Define useful theorem environments.
 \newtheorem{example}{Example}[chapter]
 \newtheorem{theorem}{Theorem}[chapter]
 \newtheorem{definition}{Definition}[chapter]
-\newtheorem{lemma}[theorem]{Lemma}
-\newtheorem{corollary}[theorem]{Corollary}
 % --------------------------------------------------------------------------
-% This will be removed at the end of the thesis.
-% Add to do notes in the thesis.
-\usepackage{todonotes}
+% Set up the bibliography.
+\usepackage[
+    sorting=ynt,
+    backend=biber,
+    style=numeric-comp
+]{biblatex}
+\addbibresource{bibliography/bibliography.bib}
+% --------------------------------------------------------------------------
+% Set the paper to be double space.
+\doublespacing{}
+% Allow equations to break.
+\allowdisplaybreaks{}
+% Set paragraph index space.
+\setlength{\parindent}{4ex}
+% Extra command defined here.
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}

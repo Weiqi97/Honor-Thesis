@@ -16,10 +16,10 @@
 \begin{titlepage}
     % Set page styles.
     \thispagestyle{empty}\doublespacing\centering
-    \LARGE \textbf{I have not decided this yet} \\
+    \LARGE \textbf{Encryption Using the Rubik's Cube} \\
     \large BY \\
     \textbf{Weiqi Feng} \\
-    \vspace{10mm}
+    \vspace{15mm}
     A Study \\
     Presented to the Faculty \\
     of \\
@@ -35,13 +35,23 @@
 % --------------------------------------------------------------------------
 % ---------------------- Before the formal content  ------------------------
 \frontmatter{}
-\include{chapters/acknowledgments}
-\tableofcontents{}
 \include{chapters/abstract}
+\include{chapters/acknowledgment}
+\tableofcontents{}
 % --------------------------------------------------------------------------
 % ---------------------- The formal content  -------------------------------
 \mainmatter{}
 \include{chapters/introduction}
-\include{chapters/cube-structure}
+\include{chapters/encryption}
+\include{chapters/security}
+\include{chapters/structure}
+\include{chapters/exchange}
+\include{chapters/conclusion}
+% --------------------------------------------------------------------------
+% ---------------------- After the formal content  -------------------------
+\backmatter{}
+\emergencystretch=2em
+\printbibliography[heading=bibintoc]
+\include{chapters/appendix}
 % --------------------------------------------------------------------------
 \end{document}

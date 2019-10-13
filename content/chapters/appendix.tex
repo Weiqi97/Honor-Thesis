@@ -1,0 +1,27 @@
+\chapter{Appendix}
+\par The implementation of the Rubik's Cube encryption is hosted on GitHub at https://github.com/Weiqi97/Cube-Crypto and the file structure is listed here:
+\begin{center}
+    \begin{minipage}{7cm}
+        \dirtree{%
+            .1 cube\textunderscore{}encryption.
+            .2 analyzers.
+            .3 bit\textunderscore{}analyzer.py.
+            .3 key\textunderscore{}analyzer.py.
+            .3 location\textunderscore{}analyzer.py.
+            .2 encrypt\textunderscore{}bit.
+            .3 cube.py.
+            .3 cubie.py.
+            .3 encryption.py.
+            .3 face.py.
+            .2 encrypt\textunderscore{}item.
+            .3 cube.py.
+            .3 encryption.py.
+            .3 face.py.
+            .2 helper.
+            .3 constant.py.
+            .3 utility.py.
+        }
+    \end{minipage}
+\end{center}
+Files in analyzers were used to generate statistics in Chapter~\ref{chap:security}. The folder encrypt\textunderscore{}bit contains the Rubik's Cube encryption $\Pi_{RC}$ we described in this thesis. It allows users freely pick the size of the desired Rubik's Cube while it takes in an English sentence as the input. This implementation uses CBC mode when the cube used cannot fit the entire plaintext.
+\par The folder encrypt\textunderscore{}item contains an implementation that is similar to the encryption $\Pi_{RC}$ but does not require the input to be a string. As long as the input is a list of items, the encryption protocol will perform a shuffling on the elements of that list. Finally under helper folder, there are functions to convert strings to binaries and vice versa, as well as function that stimulates \textbf{Gen} and generates random keys with desired length. On GitHub, there is also a Jupyter notebook which contains sample runs of the encryption system.

@@ -1,0 +1,229 @@
+\chapter{Key exchange protocol}\label{chap:exchange}
+The private key system we developed in Chapter~\ref{chap:encryption} and \ref{chap:security} required the two parties to possess the same shared key. One of the major development in modern cryptography is the public key system that allows parties to securely exchange a shared key to use in a symmetric system. In this chapter, we build a Rubik's Cube key exchange protocol using a structure similar to Diffie-Hellman key exchange.
+
+\section{Diffie-Hellman key exchange}
+\par As we mentioned before, communication between two parties using private-key encryption requires that they first exchange keys by some secure channel. Diffie-Hellman key exchange, shorten as DHKE, is a method of securely exchanging cryptographic keys over a public channel, and our Rubik's Cube key exchange protocol builds upon it.
+\begin{enumerate}
+    \item Alice and Bob agree on a arbitrary finite Abelian group $G$ of order $n$ and an element $g \in G$. Both group $G$ and the element $g$ will be made public to everyone. (The group $G$ is written multiplicatively.)
+    \item Alice picks a random natural number $a$, where $1 \leq a < n$, and sends $A = g^a$ to Bob. ($a$ remains secret to everyone besides Alice.)
+    \item Bob picks a random natural number $b$, where $1 \leq b < n$, and sends $B = g^b$ to Alice. ($b$ remains secret to everyone besides Bob.)
+    \item Alice computes $S_a = A^b$ and Bob computes $S_b = B^a$.
+\end{enumerate}
+We claim $S = S_a = S_b$ because $S_a = A^b = (g^a)^b = g^{ab} = (g^b)^a = B^a = S_b$. This ensures that Alice and Bob end up with the same shared value. In Table~\ref{tab:diffie-hellman-value}, we display each party's knowledge on various values assuming the existence of an eavesdropper.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline Value & Alice & Bob & Eavesdropper \\ \hline \hline
+        G & \cmark & \cmark & \cmark \\ \hline
+        g & \cmark & \cmark & \cmark \\ \hline
+        a & \cmark & \xmark & \xmark \\ \hline
+        b & \xmark & \cmark & \xmark \\ \hline
+        A & \cmark & \cmark & \cmark \\ \hline
+        B & \cmark & \cmark & \cmark \\ \hline
+        S & \cmark & \cmark & \xmark \\ \hline
+    \end{tabular}
+    \caption{Diffie-Hellman secrecy table}
+    \label{tab:diffie-hellman-value}
+\end{table}
+We see that the security of the DHKE protocol is based on that given $g, g^a, g^b$, finding $a$ or $b$ is difficult and thus finding the shared value $g^{ab}$ is hard as well. This problem is known as the \textit{discrete logarithm problem}. Though discrete logarithms are quickly computable in a few special cases, no efficient method is known for computing them in general. 
+\par We want to build a minimal example with the multiplicative group to walk through the details of DHKE. Suppose Alice and Bob agree to use a modulus $p = 11$ ($G = \mathbb{U}_{11}$), and a base $g = 2$ (which generates $G$).
+\begin{enumerate}
+    \item Alice picks a random natural number $a = 3$, and sends $A = g^a$ to Bob. \\
+    $A = 2^3 \mod 11 = 8 \mod 11 = 8$
+    \item Bob picks a random natural number $b = 7$, and sends $B = g^b$ to Alice. \\
+    $B = 2^7 \mod 11 = 128 \mod 11 = 7$
+    \item Alice computes $S = B^a = 7^3 \mod 11 = 343 \mod 11 = 2$
+    \item Bob computes $S = A^b = 8^7 \mod 11 = 2097152 \mod 11 = 2$
+    \item Alice and Bob now share a secret, the number 2.
+\end{enumerate}
+Of course, much larger values of $a$, $b$, and $p$ would be needed to make the DHKE secure. In real life applications, $p$ should have a length of 1024 bits or even longer and $g$ should have large prime order. The most common used group by the DHKE protocol is the multiplicative group of integers modulo $p$, with the elliptic curves being a significant variant. 
+
+\section{Rubik's Cube key exchange}
+\par Notably, the original implementation of the DHKE requires the selected group $G$ to be Abelian but the Rubik's Cube group is not since the fundamental moves do not all commute with each other. By extracting the ideas presented in the paper\cite{exchange}, we can design a DHKE-like protocol that helps us securely exchange information between two parties but does not require the group $G$ to be Abelian.
+\par Assume that we have two parties, Alice and Bob, who want to share the secret key. Let them agree on using the Rubik's cube group $G_3$. An element (one state) $g \in G_3$ is chosen and made public as well as an arbitrary automorphism $\phi$ of $G_3$. Alice chooses a private number $a \in \mathbb{N}$ and Bob chooses a private number $b \in \mathbb{N}$.
+\begin{enumerate}
+    \item Alice picks a natural number $a > 1$ and computes $A = \phi^{a - 1}(g) \cdots \phi^2(g) \cdot \phi(g) \cdot g$ and sends this value to Bob.
+    \item Bob picks a natural number $b > 1$ and computes $B = \phi^{b - 1}(g) \cdots \phi^2(g) \cdot \phi(g) \cdot g$ and sends this value to Alice.
+    \item Alice computes her key $K_A = \phi^a(B) \cdot A$.
+    \item Bob computes his key $K_B = \phi^b(A) \cdot B$.
+\end{enumerate}
+We claim that Alice and Bob share the same secret key. Alice's shared key is:
+\begin{align}
+    K_A = \phi^a(B) \cdot A & = \phi^a(\phi^{b - 1}(g) \cdots \phi(g) \cdot g) \cdot ( \phi^{a - 1}(g) \cdots \phi(g) \cdot g) \\ 
+    & = (\phi^a(\phi^{b - 1}(g)) \cdots \phi^{a}(\phi(g)) \cdot \phi^a(g)) \cdot ( \phi^{a - 1}(g) \cdots \phi(g) \cdot g) \\
+    & = (\phi^{a + b - 1}(g) \cdots \phi^{a + 1}(g) \cdot \phi^a(g)) \cdot ( \phi^{a - 1}(g) \cdots \phi(g) \cdot g) \\
+    & = \phi^{a + b - 1}(g) \cdots \phi(g) \cdot g
+\end{align}
+We could go from step $(\ref{chap:exchange}.1)$ to step $(\ref{chap:exchange}.2)$ because of the operation preserving feature of automorphism, which is $\phi(g_1g_2) = \phi(g_1)\phi(g_2)$. The shared key Bob holds can be calculated in a similar fashion:
+\begin{align*}
+    K_B = \phi^b(A) \cdot B & = \phi^b(\phi^{a - 1}(g) \cdots \phi(g) \cdot g) \cdot ( \phi^{b - 1}(g) \cdots \phi(g) \cdot g) \\ 
+    & = (\phi^{b + a - 1}(g) \cdots \phi^{b + 1}(g) \cdot \phi^b(g)) \cdot ( \phi^{b - 1}(g) \cdots \phi(g) \cdot g) \\
+    & = \phi^{b + a - 1}(g) \cdots \phi(g) \cdot g = K_A
+\end{align*}
+Notice that the Diffie-Hellman secrecy table displayed in Table~\ref{tab:diffie-hellman-value} still holds true for above settings. If we pick $\phi$ of $G_3$ as $\phi(g) = g$, we can discover that, different from the standard DHKE, correctness of the Rubik's Cube key exchange is based on the equality $g^a \cdot g^b = g^b \cdot g^a = g^{a+b}$.
+\par Let us show an example of how to use Rubik's Cube key exchange protocol. The group we are using is $G_3$ and this information is known by public. We also pick a public automorphism $\phi$ to be a right conjugation by $R$. That is $\phi(g) = RgR^{-1}$. Finally we pick a public group element $g = U$ (the state we reach to by applying move $U$ to a solved cube.) 
+\begin{enumerate}
+    \item Alice picks a random natural number $a = 4$, and sends $A$ to Bob.
+    \begin{align*}
+        A & = \phi^3(g) \cdot \phi^2(g) \cdot \phi(g) \cdot g \\
+        & = R^3(g)R^{-3}R^2(g)R^{-2}R(g)R^{-1}g \\
+        & = R^3(g)(R^{-1}g)(R^{-1}g)(R^{-1}g) \\
+        & = R^3(g)(R^{-1}g)^3
+    \end{align*}
+    \item Bob picks a random natural number $b = 8$, and sends $B$ to Alice.
+    \begin{align*}
+        B & = \phi^7(g) \cdot \phi^6(g) \cdots \phi(g) \cdot g \\
+        & = R^7(g)R^{-7}R^6(g)R^{-6} \cdots R(g)R^{-1}g \\
+        & = R^7(g)(R^{-1}g)(R^{-1}g) \cdots (R^{-1}g) \\
+        & = R^7(g)(R^{-1}g)^7
+    \end{align*}
+    \item Alice computes $K_A = \phi^4(B) \cdot A$ and finds the following result.
+    \begin{align*}
+        \phi^4(B) \cdot A & = \phi^4(R^7(g)(R^{-1}g)^7)\;R^3(g)\;(R^{-1}g)^3 \\
+        & = R^4R^7(g)(R^{-1}g)^7R^{-4}R^3(g)(R^{-1}g)^3 \\
+        & = R^{11}(g)(R^{-1}g)^7(R^{-1}g)(R^{-1}g)^3 \\
+        & = R^{11}(g)(R^{-1}g)^{11}
+    \end{align*}
+    \item Bob computes $K_B = \phi^8(A) \cdot B$ and finds the following result.
+    \begin{align*}
+        \phi^8(A) \cdot B & = \phi^8(R^3(g)(R^{-1}g)^3)\;R^7(g)\;(R^{-1}g)^7 \\
+        & = R^8R^3(g)(R^{-1}g)^3R^{-8}R^7(g)(R^{-1}g)^7 \\
+        & = R^{11}(g)(R^{-1}g)^3(R^{-1}g)(R^{-1}g)^7 \\
+        & = R^{11}(g)(R^{-1}g)^{11}
+    \end{align*}
+    \item Alice and Bob now share a secret series of fundamental moves of $C_3$.
+    $$K_A = K_B = R^{11}(U)(R^{-1}U)^{11}$$
+\end{enumerate}
+Since $R^{-1}$ is the move that reverses $R$, we can simply rewrite it as $R'$. Finally the move Alice and Bob shares is $\underbrace{R...R}_{11}U\underbrace{R'U...R'U}_{11}$. To get more complex result in real applications, we could explore the group structure of $G_3 \cong (\mathbb{Z}_3^7 \times \mathbb{Z}_2^{11}) \rtimes (S_8 \times A_{12})$ to select more complicated $g$ and $\phi$ at the beginning.
+\par Most modern key exchange protocols help communicating parties to establish a commonly shared number that is used for the key with a symmetric system like AES. We can add one more step in the key exchange protocol so that Alice and Bob can use their secretly shared moves to retrieve a number. Alice and Bob need to agree on a particular setting of $C_3$. We will refer this cube as \textit{number exchange cube}. They both fill cubie on up face, down face, right face by ones and fill cubies on front face, back face, left face by zeros as shown in Table~\ref{tab:exchange-start-bit}. After they retrieve the shared fundamental moves $K_A = K_B$, they apply that series of moves to the number exchange cube and then read out the bits as the binary number. Notice that here each cubie only holds one bit and we do not want the center cubies to hold any information since they are fixed. We also do not want to use all bits from the cube because then the enemy knows that we are generating a binary of length 48 where half bits are ones and half bits are zeros. We instead only take bits from three faces, the up face, the front face and the right face. So for an arbitrary large cube $C_n$ we can use it to share a binary value with length of $3 \cdot (n^2 - (n \mod 2))$ bits.
+\par To illustrate a detailed example of above procedure, let us first take a look at Table~\ref{tab:exchange-start-bit}, which describes the starting position of the number exchange cube $C_3$ that Alice and Bob uses to retrieve the shared number. 
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline Up face & 11111111  \\
+        \hline Front face & 00000000  \\
+        \hline Right face & 11111111  \\
+        \hline Down face & 11111111  \\
+        \hline Back face & 00000000  \\
+        \hline Left face & 00000000  \\ \hline
+    \end{tabular}
+    \caption{Starting position of the number exchange cube $C_3$}
+    \label{tab:exchange-start-bit}
+\end{table}
+Both Alice and Bob apply the shared moves $\underbrace{R...R}_{11}U\underbrace{R'U...R'U}_{11}$ to the number exchange cube, and the bits on each face is displayed in Table~\ref{tab:exchange-final-bit}.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline Up face & \textcolor{blue}{00011010}  \\
+        \hline Front face & \textcolor{blue}{00100001}  \\
+        \hline Right face & \textcolor{blue}{11110001}  \\
+        \hline Down face & 11110100  \\
+        \hline Back face & 01100000  \\
+        \hline Left face & 11111110  \\ \hline
+    \end{tabular}
+    \caption{Final position of the number exchange cube $C_3$}
+    \label{tab:exchange-final-bit}
+\end{table}
+Remember that we only use bits from three faces, and those bits we want are colored in blue. Both Alice and Bob read them out in order of: up face $\rightarrow$ front face $\rightarrow$ right face to retrieve the shared binary number $000110100010000111110001_2$.
+\par In practice, symmetric keys are usually much longer. For example, the software FireVault on Mac OS uses AES with a 256-bit key to encrypt user's hard drive. We could use $C_{10}$ to exchange the key since $C_{10}$ are capable of holding $3 \cdot 10^2 = 300$ bits.  
+\par Even though we do not directly use numbers as the key to our Rubik's Cube encryption $\Pi_{RC}$, given a binary number we can still convert it to a series of fundamental moves. Suppose we have a set $S$ which contains all base 18 numbers with only one digit. Thus $S = \{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, a, b, c, d, e, f, g, h\}$. In Table~\ref{tab:map-move} find a one-to-one mapping between elements of $S$ and the 18 fundamental moves.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline 0 - $U$ & 1 - $F$ & 2 - $R$ & 3 - $D$ & 4 - $B$ & 5 - $L$ \\
+        \hline 6 - $U2$ & 7 - $F2$ & 8 - $R2$ & 9 - $D2$ & a - $B2$ & b - $L2$ \\
+        \hline c - $U'$ & d - $F'$ & e - $R'$ & f - $D'$ & g - $B'$ & h - $L'$ \\ \hline
+    \end{tabular}
+    \caption{Mapping between set $S$ and fundamental moves}
+    \label{tab:map-move}
+\end{table}
+Alice and Bob can convert the shared binary number to a base 18 number, $g5bff_{18}$. Then their commonly shared key will be ``$B'$ $L$ $R2$ $D'$ $D'$ ''. Notice that the biggest possible binary we can share using $C_3$ is $2^{24} - 1$. By converting that number to base 18, we get number $8fed99$. Since the maximum value on the first digits is 8, if we always use all 6 digits, the first movement will always be restricted. We thus simply ignore the first digit and use last 5 digits to represent fundamental moves when the number happen to have 6 digits. When the number has less than 5 digits, we treat leading digits as zeros. In Table~\ref{tab:share-length}, we show the length of the key different $C_n$ can share.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline $C_3 - 5$ & $C_4 - 11$ & $C_5 - 17$ & $C_6 - 25$ & $C_7 - 34$ \\
+        \hline $C_8 - 46$ & $C_9 - 57$ & $C_{10} - 71$ & $C_{15} - 161$ & $C_{19} - 258$ \\ \hline
+    \end{tabular}
+    \caption{Maximum length of the $\Pi_{RC}$ key $C_n$ can share}
+    \label{tab:share-length}
+\end{table}
+\par In Chapter~\ref{chap:security}, we suggested to use a key with length 30. Hence choosing $C_7$ here might be most appropriate option. We now have completed the setting of the key-exchange encryption protocol and shown how to apply this to the actual Rubik's Cube encryption $\Pi_{RC}$. 
+
+\section{Complete example}
+\par Let us put everything together and demonstrate a minimal example on how Alice and Bob can securely communicate with each other by using the Rubik's Cube encryption and the Rubik's Cube key exchange protocol on $C_3$. Suppose Alice now wants to send out ``Hello Bob!''
+\par Before the secure channel is built, Alice and Bob first exchange the shared key. They pick the public element $g = U\,R\,B\,D\,L'$ and let the public automorphism $\phi \in Aut(G_3)$ to be an inner-automorphism $\phi(g) = U2\,L2\,D'\,g\,D\,L2\,U2$, and agree to use the bit shift as the permutation $p$ during encryption.
+\begin{itemize}
+    \item Alice picks a random natural number $a = 23$, and sends $A$ to Bob.
+    \begin{align*}
+        A & = \phi^{22}(g) \cdots \phi(g) \cdot g \\
+        & = (U2\,L2\,D')^{22}U\,R\,B\,D\,L'(D\,L2\,U2\,U\,R\,B\,D\,L')^{22}
+    \end{align*}
+    \item Bob picks a random natural number $b = 37$, and sends $B$ to Alice.
+    \begin{align*}
+        B & = \phi^{36}(g) \cdots \phi(g) \cdot g \\
+        & = (U2\,L2\,D')^{36}U\,R\,B\,D\,L'(D\,L2\,U2\,U\,R\,B\,D\,L')^{36}
+    \end{align*}
+    \item Alice computes $K_A = \phi^{23}(B) \cdot A$ and finds the following result.
+    $$\phi^4(B) \cdot A = (U2\,L2\,D')^{59}U\,R\,B\,D\,L'(D\,L2\,U2\,U\,R\,B\,D\,L')^{59}$$
+    \item Bob computes $K_B = \phi^{37}(A) \cdot B$ and finds the following result.
+    $$\phi^8(A) \cdot B = (U2\,L2\,D')^{59}U\,R\,B\,D\,L'(D\,L2\,U2\,U\,R\,B\,D\,L')^{59}$$
+    \item Alice and Bob now share a secret series of fundamental moves of $C_3$.
+    $$K = K_A = K_B = (U2\,L2\,D')^{59}U\,R\,B\,D\,L'(D\,L2\,U2\,U\,R\,B\,D\,L')^{59}$$
+\end{itemize}
+\par Both Alice and Bob apply the shared key $K$ to the number exchange cube $C_3$. 
+\begin{table}[ht]
+    \centering
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{tabular}{|c|c|}
+            \hline Up face & 11111111  \\
+            \hline Front face & 00000000  \\
+            \hline Right face & 11111111  \\
+            \hline Down face & 11111111  \\
+            \hline Back face & 00000000  \\
+            \hline Left face & 00000000  \\ \hline
+        \end{tabular}
+        \caption{Starting position of the \\\hspace{\textwidth} number exchange cube $C_3$}
+        \label{tab:example-exchange-start-bit}
+    \end{minipage}
+    \begin{minipage}{0.45\textwidth}
+        \centering
+        \begin{tabular}{|c|c|}
+            \hline Up face & \textcolor{blue}{11101101}  \\
+            \hline Front face & \textcolor{blue}{01000010}  \\
+            \hline Right face & \textcolor{blue}{10011011}  \\
+            \hline Down face & 00110000  \\
+            \hline Back face & 00010110  \\
+            \hline Left face & 10110111  \\ \hline
+        \end{tabular}
+        \caption{Final position of the \\\hspace{\textwidth} number exchange cube $C_3$}
+        \label{tab:example-exchange-final-bit}
+    \end{minipage}
+\end{table}
+The initial bits and final bits on faces of $C_3$ are displayed in Table~\ref{tab:example-exchange-start-bit} and Table~\ref{tab:example-exchange-final-bit} separately. The binary number Alice and Bob both retrieve is $111011010100001010011011_2$. Then, they convert this binary value to a base 18 number, $8422hh_{18}$. Alice and Bob will omit the first digit since they agree to use only the last 5 digits. By looking at the mapping described in Table~\ref{tab:map-move}, they find the shared key is ``$B\,R\,R\,L'\,L'$.'' Now Alice can convert her message to its binary representation.
+\begin{center}
+    0100100001100101011011000110110001101111 \\
+    0010000001000010011011110110001000100001
+\end{center}
+Alice no longer has to remove punctuations or capitalize all letters because the message will get changed during the encryption. Since this message contains merely 80 bits, and $C_3$ needs an input of 180 bits to encrypt. Alice needs to pad it first. The padded string is shown as below:
+\begin{center}
+    010010000110010101101100011011000110111100100000010000100110
+    111101100010001000011000000000000000000000000000000000000000
+    000000000000000000000000000000000000000000000000000000000000
+\end{center}
+After inputting the string, 36 random bits will be generated by the encryption protocol ``111100001101010110101000010000011110,'' and those bits will be added to the end of the padded string. During the encryption process, before applying each fundamental move in the key, the encryption protocol first does a XOR between faces, and then shifts bits to the right by one space. After all moves are executed, the ciphertext is:
+\newpage
+\begin{center}
+    000111011001000100101100011101101110001010000000000100100100101010100001
+    010001000111011010000000100000010001101111111011000010000100110010011101
+    010101110000101000100101010000100110001110000011010001101011000110101010
+\end{center}
+Alice can convert this binary value back to its ASCII representation, which looks like ``\;\'{E},v$\Upgamma$\c{C}\;J\'{\i}Dv\c{C}\"{u}\;$\surd{}$\;L\textyen{}W\;\%Bc\^{a}F|$\neg$\,,'' and sends it to Bob. 
+\par To decrypt Alice's message, Bob has to first find the inverse of the key ``$B\,R\,R\,L'\,L'$'', which will be ``$L$\,$L$\,$R'$\,$R'$\,$B'$.'' Then he converts the received message back to its binary representation to retrieve the 216 bits and fills an empty $C_3$ with the bits. For each fundamental move in ``$B\,R\,R\,L'\,L'$'', Bob first applies the move to the cube, then shift bits back to the left by one space and finally performs the XOR operation between the left face and the rest of faces.
+\par After all moves in the inverse of the key are applied to the cube, Bob will get the padded string. He removes all tailing zeros and one extra 1 at the end to get the plaintext in its binary representation. 
+\begin{center}
+    0100100001100101011011000110110001101111 \\
+    0010000001000010011011110110001000100001
+\end{center}
+By looking up the ASCII table, he gets Alice's message ``Hello Bob!'' To reply Alice's message, he can follow the same encryption process used by Alice, and he will keep using the shared key without exchanging new ones.
+\par The example above illustrates how everything we developed ties together and serves as a complete encryption system that helps two parties to communicate with some protection.
