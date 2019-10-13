@@ -7,4 +7,4 @@ We start by discussing what cryptography is and listing motivations for us to in
 
 Click [*here*](https://github.com/Weiqi97/Honor-Thesis/blob/master/content/main.pdf) to view the thesis itself and click [*here*](https://github.com/Weiqi97/Honor-Thesis/raw/master/content/main.pdf) to download it.
 
-This thesis is licensed under CC BY-SA 4.0.
+This thesis is licensed under CC-BY-SA-4.0.
